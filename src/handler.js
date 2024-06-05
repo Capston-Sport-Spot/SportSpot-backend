@@ -1,49 +1,7 @@
 const admin = require("firebase-admin");
 
-// Fungsi untuk mendapatkan daftar booking
-exports.getBookings = async (request, h) => {
-  try {
-    const bookingsRef = admin.firestore().collection("bookings");
-    const snapshot = await bookingsRef.get();
-    const bookings = snapshot.docs.map((doc) => doc.data());
-
-    return h.response(bookings).code(200);
-  } catch (error) {
-    return h
-      .response({
-        message: "Gagal mendapatkan booking",
-        error: error.message,
-      })
-      .code(500);
-  }
-};
-
-// Fungsi untuk membuat booking baru
-exports.createBooking = async (request, h) => {
-  const booking = request.payload;
-
-  try {
-    const bookingRef = admin.firestore().collection("bookings").doc();
-    await bookingRef.set(booking);
-
-    return h
-      .response({
-        message: "Booking berhasil dibuat",
-        booking: booking,
-      })
-      .code(201);
-  } catch (error) {
-    return h
-      .response({
-        message: "Gagal membuat booking",
-        error: error.message,
-      })
-      .code(500);
-  }
-};
-
-// Fungsi untuk registrasi pengguna baru
-exports.registerUser = async (request, h) => {
+// Registration handler
+const registerHandler = async (request, h) => {
   const { email, password, displayName, role } = request.payload;
 
   try {
@@ -53,11 +11,12 @@ exports.registerUser = async (request, h) => {
       displayName: displayName,
     });
 
+    // Set custom claims (role)
     await admin.auth().setCustomUserClaims(userRecord.uid, { role: role });
 
     return h
       .response({
-        message: "Pengguna berhasil dibuat",
+        message: "User created successfully",
         user: {
           uid: userRecord.uid,
           email: userRecord.email,
@@ -69,27 +28,27 @@ exports.registerUser = async (request, h) => {
   } catch (error) {
     return h
       .response({
-        message: "Pembuatan pengguna gagal",
+        message: "User creation failed",
         error: error.message,
       })
       .code(400);
   }
 };
 
-// Fungsi untuk login pengguna
-exports.loginUser = async (request, h) => {
+// Login handler
+const loginHandler = async (request, h) => {
   const { email, password } = request.payload;
 
   try {
     const user = await admin.auth().getUserByEmail(email);
 
-    // Catatan: Firebase Admin SDK tidak mendukung verifikasi password.
-    // Verifikasi password harus dilakukan di sisi klien menggunakan Firebase Authentication SDK.
-    // Di sini, kami hanya mensimulasikan login yang berhasil untuk tujuan demonstrasi.
+    // Note: Firebase Admin SDK does not support password verification.
+    // Password verification should be done on the client-side using Firebase Authentication SDK.
+    // Here, we're just simulating a successful login for the purpose of demonstration.
 
     return h
       .response({
-        message: "Login berhasil",
+        message: "Login successful",
         user: {
           uid: user.uid,
           email: user.email,
@@ -100,9 +59,20 @@ exports.loginUser = async (request, h) => {
   } catch (error) {
     return h
       .response({
-        message: "Login gagal",
+        message: "Login failed",
         error: error.message,
       })
       .code(401);
   }
+};
+
+// Protected route handler
+const protectedHandler = async (request, h) => {
+  return h.response({ message: "You have access to this route" }).code(200);
+};
+
+module.exports = {
+  registerHandler,
+  loginHandler,
+  protectedHandler,
 };
