@@ -1,27 +1,46 @@
 const Hapi = require("@hapi/hapi");
 const handler = require("./handler");
+const { checkAuth , checkApiKey} = require("./middleware");
 
 const routes = [
   {
-    method: "GET",
-    path: "/bookings",
-    handler: handler.getBookings,
-  },
-  {
-    method: "POST",
-    path: "/bookings",
-    handler: handler.createBooking,
-  },
-  {
     method: "POST",
     path: "/register",
-    handler: handler.registerUser,
+    handler: handler.registerHandler,
   },
   {
     method: "POST",
     path: "/login",
-    handler: handler.loginUser,
+    handler: handler.loginHandler,
   },
+  {
+    method: "GET",
+    path: "/profile",
+    options :{
+      pre:[{method: checkAuth}],
+      handler : handler.profileHandler,
+
+    }
+  },
+  {
+    method: "POST",
+    path: "/addLapangan",
+    options :{
+      pre:[{method: checkApiKey}],
+      handler : handler.addFieldHandler,
+    }
+  },
+  {
+    method: "GET",
+    path: "/lapangans",
+    handler: handler.getFieldHandler
+  },
+  {
+    method: "GET",
+    path: `/lapangans/{id}`,
+    handler: handler.getFieldByidHandler,
+  }
+    
 ];
 
 module.exports = routes;
