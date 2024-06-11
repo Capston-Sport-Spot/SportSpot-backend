@@ -53,7 +53,8 @@ const checkApiKey = (request, h) => {
 
 
 
+
 module.exports = {
   checkAuth,
-  checkApiKey
+  checkApiKey,
 };

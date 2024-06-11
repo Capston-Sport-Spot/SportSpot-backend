@@ -3,6 +3,8 @@ const handler = require("./handler");
 const { checkAuth , checkApiKey} = require("./middleware");
 
 const routes = [
+
+  //Account
   {
     method: "POST",
     path: "/register",
@@ -22,6 +24,21 @@ const routes = [
 
     }
   },
+  {
+    method: "PUT",
+    path: "/profile",
+    options :{
+      pre:[{method: checkAuth}],
+      handler : handler.updateProfileHandler,
+
+    }
+
+  },
+
+
+  
+
+  //Lapangan
   {
     method: "POST",
     path: "/addLapangan",
