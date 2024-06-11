@@ -86,7 +86,38 @@ const routes = [
 
 
 
-  //
+  
+  //Reservation
+  {
+    method: "POST",
+    path: "/reservations",
+    options :{
+      pre: [{ method: checkAuth }],
+      handler : handler.reservationHandler,
+    }
+  },
+  {
+    method: "GET",
+    path: "/reservations",
+    options :{
+      pre: [{ method: checkAuth }],
+      handler : handler.getUserReservationHandler,
+    }
+  },
+  {
+    method: "GET",
+    path: `/reservations/{lapanganId}/{subFieldName}`,
+    handler: handler.getReservationbBySubFieldHandler,
+  },
+  {
+    method: "GET",
+    path: "/reservations/history",
+    options :{
+      pre: [{ method: checkAuth }],
+      handler : handler.historyReservationHandler,
+    }
+  },
+
     
 ];
 

@@ -333,6 +333,173 @@ const searchFieldHandler = async (request, h) => {
 
 
 
+//RESERVATION
+//reservation handler
+const reservationHandler = async (request, h) => {
+    const { lapanganId, subFieldName, date, startTime, endTime } = request.payload;
+    const userId = request.user.uid;
+
+    try {
+        const lapanganDoc = await admin.firestore().collection('lapangans').doc(lapanganId).get();
+
+        if (!lapanganDoc.exists) {
+            return h.response({ message: 'Lapangan not found' }).code(404);
+        }
+
+        // Periksa apakah tanggal dan waktu reservasi berada di masa depan
+        const now = new Date();
+        const reservationStartDateTime = new Date(`${date}T${startTime}:00`);
+        const reservationEndDateTime = new Date(`${date}T${endTime}:00`);
+
+        if (reservationStartDateTime < now) {
+            return h.response({ message: 'Reservasi tidak dapat dilakukan di masa lalu' }).code(400);
+        }
+
+        if (reservationStartDateTime >= reservationEndDateTime) {
+            return h.response({ message: 'Waktu mulai harus lebih awal dari waktu selesai' }).code(400);
+        }
+
+        const lapanganData = lapanganDoc.data();
+        const { openingHours, subFields } = lapanganData;
+
+        // Periksa apakah waktu reservasi dalam jam operasional
+        const reservationStartTime = reservationStartDateTime.getHours() * 60 + reservationStartDateTime.getMinutes();
+        const reservationEndTime = reservationEndDateTime.getHours() * 60 + reservationEndDateTime.getMinutes();
+        const [openingHoursStart, openingMinutesStart] = openingHours.open.split(':').map(Number);
+        const [openingHoursEnd, openingMinutesEnd] = openingHours.close.split(':').map(Number);
+        const openingTime = openingHoursStart * 60 + openingMinutesStart;
+        const closingTime = openingHoursEnd * 60 + openingMinutesEnd;
+
+        if (reservationStartTime < openingTime || reservationEndTime > closingTime) {
+            return h.response({ message: 'Reservation time outside operating hours' }).code(400);
+        }
+
+        // Periksa apakah sub lapangan sudah dipesan pada rentang waktu yang diminta
+        const existingReservations = await admin.firestore().collection('reservations')
+            .where('lapanganId', '==', lapanganId)
+            .where('subFieldName', '==', subFieldName)
+            .where('date', '==', date)
+            .get();
+
+        const conflicts = existingReservations.docs.some(doc => {
+            const existingReservation = doc.data();
+            const existingStartTime = new Date(`${date}T${existingReservation.startTime}:00`);
+            const existingEndTime = new Date(`${date}T${existingReservation.endTime}:00`);
+            return (reservationStartDateTime < existingEndTime && reservationEndDateTime > existingStartTime);
+        });
+
+        if (conflicts) {
+            return h.response({ message: `${subFieldName} sudah dipesan pada rentang waktu yang diminta` }).code(400);
+        }
+
+        // Hitung total harga
+        const subField = subFields.find(field => field.fieldName === subFieldName);
+        if (!subField) {
+            return h.response({ message: 'Sub lapangan tidak ditemukan' }).code(404);
+        }
+        const { pricePerSession } = subField;
+        const durationInHours = (reservationEndDateTime - reservationStartDateTime) / (1000 * 60 * 60); // Durasi dalam jam
+        const totalPrice = pricePerSession * durationInHours;
+
+        // Sub lapangan belum dipesan pada rentang waktu yang diminta, buat reservasi baru
+        const reservationRef = admin.firestore().collection('reservations').doc();
+        await reservationRef.set({
+            userId: userId,
+            lapanganId: lapanganId,
+            subFieldName: subFieldName,
+            date: date,
+            startTime: startTime,
+            endTime: endTime,
+            endDateTime: reservationEndDateTime, // Simpan waktu akhir reservasi
+            totalPrice: totalPrice,
+            createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        return h.response({ message: 'Reservation created successfully', totalPrice: totalPrice }).code(201);
+    } catch (error) {
+        console.error('Error creating reservation:', error);
+        return h.response({ message: 'Error creating reservation', error: error.message }).code(400);
+    }
+}
+
+
+//See User reservation
+const getUserReservationHandler = async (request, h) => {
+    const userId = request.user.uid;
+
+    try {
+        const reservationsSnapshot = await admin.firestore().collection('reservations').where('userId', '==', userId).get();
+        const reservations = reservationsSnapshot.docs.map(doc => doc.data());
+
+        return h.response(reservations).code(200);
+    } catch (error) {
+        console.error('Error fetching reservations:', error);
+        return h.response({ message: 'Error fetching reservations', error: error.message }).code(500);
+    }
+}
+
+
+//See Subfield Reservation
+//Melihat reservasi yang ada pada subfield lapangan.
+const getReservationbBySubFieldHandler = async (request, h) => {
+    const { lapanganId, subFieldName } = request.params;
+
+    try {
+        const reservationsSnapshot = await admin.firestore().collection('reservations')
+            .where('lapanganId', '==', lapanganId)
+            .where('subFieldName', '==', subFieldName)
+            .get();
+
+        const reservations = reservationsSnapshot.docs.map(doc => doc.data());
+
+        return h.response(reservations).code(200);
+    } catch (error) {
+        console.error('Error fetching reservations:', error);
+        return h.response({ message: 'Error fetching reservations', error: error.message }).code(500);
+    }
+}
+
+//see History user handler
+//Melihat riwayat pemesanan reservasi pengguna
+const historyReservationHandler =  async (request, h) => {
+    const userId = request.user.uid;
+
+    try {
+        const historySnapshot = await admin.firestore().collection('reservationHistory').where('userId', '==', userId).get();
+        const history = historySnapshot.docs.map(doc => doc.data());
+
+        return h.response(history).code(200);
+    } catch (error) {
+        console.error('Error fetching reservation history:', error);
+        return h.response({ message: 'Error fetching reservation history', error: error.message }).code(500);
+    }
+}
+
+  //Cron untuk menjalankan 
+  //Dimana data dari document reservation yang harusnya sudah kadal luarsa akan secara otomatis berpindah ke document reservation history.
+  const moveCompletedReservationsToHistory = async () => {
+    const now = new Date();
+    try {
+        const completedReservationsSnapshot = await admin.firestore().collection('reservations')
+            .where('endDateTime', '<=', now)
+            .get();
+
+        const batch = admin.firestore().batch();
+        completedReservationsSnapshot.forEach(doc => {
+            const data = doc.data();
+            batch.set(admin.firestore().collection('reservationHistory').doc(doc.id), data);
+            batch.delete(admin.firestore().collection('reservations').doc(doc.id));
+        });
+
+        await batch.commit();
+        console.log('Completed reservations moved to history');
+    } catch (error) {
+        console.error('Error moving completed reservations to history:', error);
+    }
+};
+
+setInterval(moveCompletedReservationsToHistory, 60 * 60 * 1000); // Jalankan setiap jam
+
 
 
 // Protected route handler
@@ -350,5 +517,9 @@ module.exports = {
   getFieldByidHandler,
   searchFieldHandler,
   updateFieldHandler,
+  reservationHandler,
+  getUserReservationHandler,
+  getReservationbBySubFieldHandler,
+  historyReservationHandler,
   protectedHandler,
 };
