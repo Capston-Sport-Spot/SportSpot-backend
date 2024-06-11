@@ -18,6 +18,9 @@ admin.initializeApp({
 
 const db = admin.firestore();
 
+
+
+//UPLOAD
  //UPload Imange
  const uploadImageToFirebase = async (file, folder = 'lapangans') => {
     const bucket = admin.storage().bucket();
@@ -167,51 +170,73 @@ const updateProfileHandler = async (request, h) => {
 }
 
 
-//Lapangan
+
+
+
+
+//LAPANGAN
 //addlapangan handler
 const addFieldHandler = async (request, h) => {
-  const { lapanganName, lapanganType, location, openingHours, subFields } = request.payload;
+    const { lapanganName, lapanganType, location, subFields } = request.payload;
+    const openingHours = JSON.parse(request.payload.openingHours); // Parse openingHours dari JSON string
+    const file = request.payload.file;
 
-  try {
-      const docRef = admin.firestore().collection('lapangans').doc();
-      await docRef.set({
-          lapanganName: lapanganName,
-          lapanganType: lapanganType,
-          location: location,
-          openingHours: {
-              start: openingHours.start,
-              end: openingHours.end
-          },
-          subFields: subFields.map(field => ({
-              ...field
-          })),
-          createdAt: admin.firestore.FieldValue.serverTimestamp()
-      });
+    try {
+        // Periksa apakah lapangan dengan nama yang sama sudah ada
+        const lapanganSnapshot = await admin.firestore().collection('lapangans')
+            .where('lapanganName', '==', lapanganName)
+            .get();
 
-      return h.response({ message: 'Lapangan and sub-fields added successfully' }).code(201);
-  } catch (error) {
-      console.error('Error adding lapangan and sub-fields:', error);
-      return h.response({ message: 'Error adding lapangan and sub-fields', error: error.message }).code(400);
-  }
-};
+        if (!lapanganSnapshot.empty) {
+            return h.response({ message: 'Lapangan dengan nama tersebut sudah ada' }).code(400);
+        }
+
+        let imageUrl = '';
+        if (file) {
+            const urls = await uploadImageToFirebase(file, 'lapangans'); // Mengunggah gambar ke folder 'lapangans'
+            imageUrl = urls[0];
+        }
+
+        const docRef = admin.firestore().collection('lapangans').doc();
+        await docRef.set({
+            lapanganName: lapanganName,
+            lapanganType: lapanganType,
+            location: location,
+            openingHours: {
+                open: openingHours.open,
+                close: openingHours.close
+            },
+            subFields: JSON.parse(subFields),
+            imageUrl: imageUrl,
+            createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        return h.response({ message: 'Lapangan and sub-fields added successfully' }).code(201);
+    } catch (error) {
+        console.error('Error adding lapangan and sub-fields:', error);
+        return h.response({ message: 'Error adding lapangan and sub-fields', error: error.message }).code(400);
+    }
+}
 
 
 //Malihat daftar lapangan
 //getfield handler
-const getFieldHandler = async (request, h) => {
-  try {
-      const lapangansSnapshot = await admin.firestore().collection('lapangans').get();
-      const lapangans = lapangansSnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-      }));
+const getFieldHandler =  async (request, h) => {
+    try {
+        const lapangansSnapshot = await admin.firestore().collection('lapangans').get();
+        const lapangans = lapangansSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
 
-      return h.response(lapangans).code(200);
-  } catch (error) {
-      console.error('Error fetching lapangans:', error);
-      return h.response({ message: 'Error fetching lapangans', error: error.message }).code(500);
-  }
+        return h.response(lapangans).code(200);
+    } catch (error) {
+        console.error('Error fetching lapangans:', error);
+        return h.response({ message: 'Error fetching lapangans', error: error.message }).code(500);
+    }
 }
+
+
 
 //Melihat lapangan by id
 //getfieldbyid handler
@@ -233,6 +258,78 @@ const getFieldByidHandler = async (request, h) => {
 }
 
 
+//Update fieldHnadler
+const updateFieldHandler = async (request, h) => {
+    const lapanganId = request.params.id;
+    const { lapanganName, lapanganType, location, subFields, openingHours } = request.payload;
+    const file = request.payload.file;
+
+    try {
+        // Periksa apakah lapangan dengan ID tersebut ada dalam database
+        const lapanganDoc = await admin.firestore().collection('lapangans').doc(lapanganId).get();
+        if (!lapanganDoc.exists) {
+            console.error('Lapangan not found:', lapanganId);
+            return h.response({ message: 'Lapangan not found' }).code(404);
+        }
+
+        // Update informasi lapangan
+        const updatedData = {
+            lapanganName: lapanganName,
+            lapanganType: lapanganType,
+            location: location,
+            openingHours: JSON.parse(openingHours),
+            subFields: JSON.parse(subFields)
+        };
+
+        // Jika ada file gambar yang diunggah, upload dan simpan URL gambar baru, lalu hapus gambar lama
+        let imageUrl = lapanganDoc.data().imageUrl;
+        if (file) {
+            const urls = await uploadImageToFirebase(file, 'lapangans');
+            const newImageUrl = urls[0];
+
+            // Hapus gambar lama jika ada
+            if (imageUrl) {
+                await deleteImageFromFirebase(imageUrl);
+            }
+
+            imageUrl = newImageUrl;
+        }
+
+        // Memperbarui data lapangan di Firestore
+        await admin.firestore().collection('lapangans').doc(lapanganId).update({
+            ...updatedData,
+            imageUrl: imageUrl
+        });
+
+        console.log('Lapangan updated successfully');
+        return h.response({ message: 'Lapangan updated successfully' }).code(200);
+    } catch (error) {
+        console.error('Error updating lapangan:', error);
+        return h.response({ message: 'Error updating lapangan', error: error.message }).code(500);
+    }
+}
+
+//Search Lapangan Handler
+const searchFieldHandler = async (request, h) => {
+    const { keyword } = request.query;
+
+    try {
+        const lapanganSnapshot = await admin.firestore().collection('lapangans')
+            .where('lapanganName', '>=', keyword)
+            .where('lapanganName', '<=', keyword + '\uf8ff')
+            .get();
+
+        const lapanganResults = [];
+        lapanganSnapshot.forEach(doc => {
+            lapanganResults.push({ id: doc.id, ...doc.data() });
+        });
+
+        return h.response(lapanganResults).code(200);
+    } catch (error) {
+        console.error('Error searching lapangan:', error);
+        return h.response({ message: 'Error searching lapangan', error: error.message }).code(500);
+    }
+}
 
 
 
@@ -251,5 +348,7 @@ module.exports = {
   addFieldHandler,
   getFieldHandler,
   getFieldByidHandler,
+  searchFieldHandler,
+  updateFieldHandler,
   protectedHandler,
 };

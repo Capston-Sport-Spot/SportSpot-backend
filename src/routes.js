@@ -36,7 +36,7 @@ const routes = [
   },
 
 
-  
+
 
   //Lapangan
   {
@@ -44,6 +44,12 @@ const routes = [
     path: "/addLapangan",
     options :{
       pre:[{method: checkApiKey}],
+      payload:{
+        maxBytes: 10485760, // 10MB
+        output: 'file',
+        parse: true,
+        multipart: true
+      },
       handler : handler.addFieldHandler,
     }
   },
@@ -56,7 +62,31 @@ const routes = [
     method: "GET",
     path: `/lapangans/{id}`,
     handler: handler.getFieldByidHandler,
-  }
+  },
+  {
+    method: "PUT",
+    path: "/lapangan/{id}",
+    options :{
+      pre: [{ method: checkApiKey }],
+      payload: {
+          maxBytes: 10485760, // 10MB
+          output: 'file',
+          parse: true,
+          multipart: true
+      },
+      handler : handler.updateFieldHandler,
+    }
+
+  },
+  {
+    method: "GET",
+    path: `/searchLapangan`,
+    handler: handler.searchFieldHandler,
+  },
+
+
+
+  //
     
 ];
 
