@@ -654,6 +654,151 @@ const searchEventHandler = async (request, h) => {
 
 
 
+//COMMUNITY
+//add Community handler
+//Untuk menambahkan community ke database.
+const addCommunityHandler = async (request, h) => {
+    const { name, description, location, contact, sportType } = request.payload;
+    const file = request.payload.file;
+
+    try {
+        let imageUrl = '';
+        if (file) {
+            const urls = await uploadImageToFirebase(file, 'communities');
+            imageUrl = urls[0];
+        }
+
+        const docRef = admin.firestore().collection('communities').doc();
+        await docRef.set({
+            name: name,
+            description: description,
+            location: location,
+            contact: contact,
+            sportType: sportType,
+            imageUrl: imageUrl,
+            createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        return h.response({ message: 'Community added successfully' }).code(201);
+    } catch (error) {
+        console.error('Error adding community:', error);
+        return h.response({ message: 'Error adding community', error: error.message }).code(400);
+    }
+}
+
+
+//get community handler
+//Untuk mendapatkan data keseluruhan comunity yang ada.
+const getCommunityHandler =  async (request, h) => {
+    try {
+        const communitiesSnapshot = await admin.firestore().collection('communities').get();
+        const communities = communitiesSnapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+        }));
+
+        return h.response(communities).code(200);
+    } catch (error) {
+        console.error('Error fetching communities:', error);
+        return h.response({ message: 'Error fetching communities', error: error.message }).code(500);
+    }
+}
+
+//get community handler by ID
+//Untuk mendapatkan data community secara spesifik dengan ID dari database.
+const getCommunityByIdHandler = async (request, h) => {
+    const { id } = request.params;
+
+    try {
+        const communityDoc = await admin.firestore().collection('communities').doc(id).get();
+
+        if (!communityDoc.exists) {
+            return h.response({ message: 'Community not found' }).code(404);
+        }
+
+        return h.response(communityDoc.data()).code(200);
+    } catch (error) {
+        console.error('Error fetching community information:', error);
+        return h.response({ message: 'Error fetching community information', error: error.message }).code(500);
+    }
+}
+
+//update community handler by ID
+//Untuk update data community di database dengan ID
+const updateCommunityHandler = async (request, h) => {
+    const communityId = request.params.id;
+    const { name, description, location, contact, sportType } = request.payload;
+    const file = request.payload.file;
+
+    try {
+        // Periksa apakah komunitas dengan ID tersebut ada dalam database
+        const communityDoc = await admin.firestore().collection('communities').doc(communityId).get();
+        if (!communityDoc.exists) {
+            console.error('Community not found:', communityId);
+            return h.response({ message: 'Community not found' }).code(404);
+        }
+
+        // Update informasi komunitas
+        const updatedData = {
+            name: name,
+            description: description,
+            location: location,
+            contact: contact,
+            sportType: sportType
+        };
+
+        // Jika ada file gambar yang diunggah, upload dan simpan URL gambar baru, lalu hapus gambar lama
+        let imageUrl = communityDoc.data().imageUrl;
+        if (file) {
+            const urls = await uploadImageToFirebase(file, 'communities');
+            const newImageUrl = urls[0];
+
+            // Hapus gambar lama jika ada
+            if (imageUrl) {
+                await deleteImageFromFirebase(imageUrl);
+            }
+
+            imageUrl = newImageUrl;
+        }
+
+        // Memperbarui data komunitas di Firestore
+        await admin.firestore().collection('communities').doc(communityId).update({
+            ...updatedData,
+            imageUrl: imageUrl
+        });
+
+        console.log('Community updated successfully');
+        return h.response({ message: 'Community updated successfully' }).code(200);
+    } catch (error) {
+        console.error('Error updating community:', error);
+        return h.response({ message: 'Error updating community', error: error.message }).code(500);
+    }
+}
+
+
+
+// Search Community Handler
+const searchCommunityHandler = async (request, h) => {
+    const { keyword } = request.query;
+
+    try {
+        const communitySnapshot = await admin.firestore().collection('communities')
+            .where('name', '>=', keyword)
+            .where('name', '<=', keyword + '\uf8ff')
+            .get();
+
+        const communityResults = [];
+        communitySnapshot.forEach(doc => {
+            communityResults.push({ id: doc.id, ...doc.data() });
+        });
+
+        return h.response(communityResults).code(200);
+    } catch (error) {
+        console.error('Error searching communities:', error);
+        return h.response({ message: 'Error searching communities', error: error.message }).code(500);
+    }
+}
+
 
 
 // Protected route handler
@@ -682,12 +827,18 @@ module.exports = {
   historyReservationHandler,
 
 //EVENT
-addEventHandler,
-getEventHandler,
-getEvnetByIdHandler,
-updateEventHandler,
-searchEventHandler,
+  addEventHandler,
+  getEventHandler,
+  getEvnetByIdHandler,
+  updateEventHandler,
+  searchEventHandler, 
 
+//Community
+addCommunityHandler,
+getCommunityHandler,
+getCommunityByIdHandler,
+updateCommunityHandler,
+searchCommunityHandler,
 
   protectedHandler,
 };

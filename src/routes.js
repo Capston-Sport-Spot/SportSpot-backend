@@ -157,7 +157,6 @@ const routes = [
             multipart: true
         },
         handler: handler.updateEventHandler,
-
   }
 },
 {
@@ -167,6 +166,50 @@ const routes = [
 },
 
 
+//Community
+{
+  method: 'POST',
+  path: '/addCommunity',
+  options: {
+      pre: [{ method: checkApiKey }], // Menambahkan checkApiKey sebagai pre-handler
+      payload: {
+          maxBytes: 10485760, // 10MB
+          output: 'file',
+          parse: true,
+          multipart: true
+      },
+      handler : handler.addCommunityHandler,
+  }
+},
+{
+  method: 'GET',
+  path: '/Community',
+  handler: handler.getCommunityHandler,
+},
+{
+  method: 'GET',
+  path: '/Community/{id}',
+  handler: handler.getCommunityByIdHandler,
+},
+{
+  method: 'PUT',
+  path: '/Community/{id}',
+  options: {
+      pre: [{ method: checkApiKey }],
+      payload: {
+          maxBytes: 10485760, // 10MB
+          output: 'file',
+          parse: true,
+          multipart: true
+      },
+      handler: handler.updateCommunityHandler,
+  }
+},
+{
+  method: 'GET',
+  path: '/searchCommunity',
+  handler: handler.searchCommunityHandler,
+}
 ];
 
 module.exports = routes;
