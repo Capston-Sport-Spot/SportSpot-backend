@@ -86,7 +86,7 @@ const routes = [
 
 
 
-  
+
   //Reservation
   {
     method: "POST",
@@ -118,7 +118,55 @@ const routes = [
     }
   },
 
-    
+
+
+  //Events
+  {
+    method: 'POST',
+    path: '/addEvent',
+    options: {
+        pre: [{ method: checkApiKey }],
+        payload: {
+            maxBytes: 10485760, // 10MB
+            output: 'file',
+            parse: true,
+            multipart: true
+        },
+        handler: handler.addEventHandler,
+    }
+  },
+  {
+    method: "GET",
+    path: `/events`,
+    handler: handler.getEventHandler,
+  },
+  {
+    method: "GET",
+    path: `/events/{id}`,
+    handler: handler.getEvnetByIdHandler,
+  },
+  {
+    method: 'PUT',
+    path: '/events/{id}',
+    options: {
+        pre: [{ method: checkApiKey }],
+        payload: {
+            maxBytes: 10485760, // 10MB
+            output: 'file',
+            parse: true,
+            multipart: true
+        },
+        handler: handler.updateEventHandler,
+
+  }
+},
+{
+  method: "GET",
+  path: `/searchEvent`,
+  handler: handler.searchEventHandler,
+},
+
+
 ];
 
 module.exports = routes;

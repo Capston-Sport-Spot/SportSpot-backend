@@ -171,9 +171,6 @@ const updateProfileHandler = async (request, h) => {
 
 
 
-
-
-
 //LAPANGAN
 //addlapangan handler
 const addFieldHandler = async (request, h) => {
@@ -502,24 +499,195 @@ setInterval(moveCompletedReservationsToHistory, 60 * 60 * 1000); // Jalankan set
 
 
 
+
+
+
+//EVENT
+//addEvent Handler
+//Untuk menambahkan event olahraga
+const addEventHandler = async (request, h) => {
+    const { title, organizer, contactInfo, eventType, description, location, date } = request.payload;
+    const file = request.payload.file;
+
+    try {
+        let imageUrl = '';
+        if (file) {
+            const urls = await uploadImageToFirebase(file, 'events'); // Mengunggah gambar ke folder 'events'
+            imageUrl = urls[0];
+        }
+
+        const docRef = admin.firestore().collection('events').doc();
+        await docRef.set({
+            title: title,
+            organizer: organizer,
+            contactInfo: contactInfo,
+            eventType: eventType,
+            description: description,
+            location: location,
+            date: new Date(date), // Simpan sebagai objek Date
+            imageUrl: imageUrl,
+            createdAt: admin.firestore.FieldValue.serverTimestamp()
+        });
+
+        return h.response({ message: 'Event added successfully' }).code(201);
+    } catch (error) {
+        console.error('Error adding event:', error);
+        return h.response({ message: 'Error adding event', error: error.message }).code(400);
+    }
+}
+
+
+//getEvent handler
+//Untuk mendapat semua Event yang ada didatabase
+const getEventHandler = async (request, h) => {
+    try {
+        const eventsSnapshot = await admin.firestore().collection('events').get();
+        const events = [];
+        eventsSnapshot.forEach(doc => {
+            events.push({ id: doc.id, ...doc.data() });
+        });
+
+        return h.response(events).code(200);
+    } catch (error) {
+        console.error('Error fetching events:', error);
+        return h.response({ message: 'Error fetching events', error: error.message }).code(400);
+    }
+}
+
+
+//getEvent handler by ID
+//Untuk mendapatkan event secara spesifik menggunakan ID
+const getEvnetByIdHandler = async (request, h) => {
+    const eventId = request.params.id;
+
+    try {
+        const eventDoc = await admin.firestore().collection('events').doc(eventId).get();
+
+        if (!eventDoc.exists) {
+            return h.response({ message: 'Event not found' }).code(404);
+        }
+
+        return h.response({ id: eventDoc.id, ...eventDoc.data() }).code(200);
+    } catch (error) {
+        console.error('Error fetching event:', error);
+        return h.response({ message: 'Error fetching event', error: error.message }).code(400);
+    }
+}
+
+//updateEvent handler by ID
+//Untuk melakukan update pada event yang ada pada database sesuai dengan ID
+const updateEventHandler = async (request, h) => {
+    const eventId = request.params.id;
+    const { title, organizer, contactInfo, eventType, description, location, date } = request.payload;
+    const file = request.payload.file;
+
+    try {
+        // Periksa apakah event dengan ID tersebut ada dalam database
+        const eventDoc = await admin.firestore().collection('events').doc(eventId).get();
+        if (!eventDoc.exists) {
+            console.error('Event not found:', eventId);
+            return h.response({ message: 'Event not found' }).code(404);
+        }
+
+        // Update informasi event
+        const updatedData = {
+            title: title,
+            organizer: organizer,
+            contactInfo: contactInfo,
+            eventType: eventType,
+            description: description,
+            location: location,
+            date: new Date(date) // Simpan sebagai objek Date
+        };
+
+        // Jika ada file gambar yang diunggah, upload dan simpan URL gambar baru, lalu hapus gambar lama
+        let imageUrl = eventDoc.data().imageUrl;
+        if (file) {
+            const urls = await uploadImageToFirebase(file, 'events');
+            const newImageUrl = urls[0];
+
+            // Hapus gambar lama jika ada
+            if (imageUrl) {
+                await deleteImageFromFirebase(imageUrl);
+            }
+
+            imageUrl = newImageUrl;
+        }
+
+        // Memperbarui data event di Firestore
+        await admin.firestore().collection('events').doc(eventId).update({
+            ...updatedData,
+            imageUrl: imageUrl
+        });
+
+        console.log('Event updated successfully');
+        return h.response({ message: 'Event updated successfully' }).code(200);
+    } catch (error) {
+        console.error('Error updating event:', error);
+        return h.response({ message: 'Error updating event', error: error.message }).code(500);
+    }
+}
+
+
+//Search Event Handler
+//Untuk mendapatkan event yang ada melalui seach.
+const searchEventHandler = async (request, h) => {
+    const { keyword } = request.query;
+
+    try {
+        const eventSnapshot = await admin.firestore().collection('events')
+            .where('title', '>=', keyword)
+            .where('title', '<=', keyword + '\uf8ff')
+            .get();
+
+        const eventResults = [];
+        eventSnapshot.forEach(doc => {
+            eventResults.push({ id: doc.id, ...doc.data() });
+        });
+
+        return h.response(eventResults).code(200);
+    } catch (error) {
+        console.error('Error searching events:', error);
+        return h.response({ message: 'Error searching events', error: error.message }).code(500);
+    }
+}
+
+
+
+
+
 // Protected route handler
 const protectedHandler = async (request, h) => {
   return h.response({ message: "You have access to this route" }).code(200);
 };
 
 module.exports = {
+//USER
   registerHandler,
   loginHandler,
   profileHandler,
   updateProfileHandler,
+
+//FIELD
   addFieldHandler,
   getFieldHandler,
   getFieldByidHandler,
   searchFieldHandler,
   updateFieldHandler,
+
+//RESERVATION
   reservationHandler,
   getUserReservationHandler,
   getReservationbBySubFieldHandler,
   historyReservationHandler,
+
+//EVENT
+addEventHandler,
+getEventHandler,
+getEvnetByIdHandler,
+updateEventHandler,
+searchEventHandler,
+
+
   protectedHandler,
 };
