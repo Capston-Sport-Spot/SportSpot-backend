@@ -15,14 +15,17 @@
 
 * **Body**
   * {  
-    "email": "newuser4@example.com",  
-    "password": "test123",  
-    "displayName": "New User"  
-    }
-
+    "email": "user@10example.com",  
+    "password": "userpassword",  
+    "displayName": "User Name",  
+    "alamat": "Jalan Irian No 2",  
+    "kota": "Makassar",  
+    "hp": "08123456789"  
+}
 * **Result**
   * Good Result  
-    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/7cf95ef5-3761-4b7c-a034-5d2a4b6877ed)
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/729500e9-92f4-4808-96d8-f00b9bbd5a97)
+
 
   * Bad Result (Account has already taken)  
     ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/11802cc6-b842-4e4c-b31f-1665635f3cd0)
@@ -65,7 +68,7 @@
 
 * **Result**
   * Good Result  
-    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/2eb6e2a1-472d-4f62-aa7b-5df9eaacef79)
+   ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/f86d4ee4-5214-410b-8483-0cecdcee4263)
 
   * Bad Result (Kesalahan memasukkan Bearer Token)  
     ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/cf3ff981-1080-4d65-85b7-77444c3ea468)
