@@ -51,8 +51,9 @@ try {
 
 //USER
 // Registration handler
+//Registrasi User baru
 const registerHandler = async (request, h) => {
-    const { email, password, displayName } = request.payload;
+    const { email, password, displayName, alamat, kota, hp } = request.payload;
 
     try {
         const userRecord = await admin.auth().createUser({
@@ -64,6 +65,9 @@ const registerHandler = async (request, h) => {
         await db.collection('users').doc(userRecord.uid).set({
             email: email,
             displayName: displayName,
+            alamat: alamat,
+            kota: kota,
+            hp: hp,
             createdAt: admin.firestore.FieldValue.serverTimestamp()
         });
 
@@ -86,8 +90,8 @@ const registerHandler = async (request, h) => {
 
 
 
-
 // Login handler
+//Login menggunakan akun yang sudah diregistrasi dan mengembalikan token
 const loginHandler = async (request, h) => {
     const { email, password } = request.payload;
 
@@ -121,8 +125,8 @@ const loginHandler = async (request, h) => {
 }
 
 
-
 //Profile Handler
+//Menampilkan profile user menggunakan token dari login
 const profileHandler =async (request, h) => {
     const userId = request.user.uid;
 
@@ -143,23 +147,27 @@ const profileHandler =async (request, h) => {
 }
 
 
-// Endpoint untuk mengupdate informasi profil pengguna
 //updateProfileHandler
+//Untuk update profile milik user
 const updateProfileHandler = async (request, h) => {
     const userId = request.user.uid;
-    const { displayName, email } = request.payload; // Mendapatkan data yang diperbarui dari payload
+    const { displayName, email, alamat, kota, hp } = request.payload;
 
     try {
-        // Periksa apakah pengguna ada dalam database
         const userDoc = await admin.firestore().collection('users').doc(userId).get();
         if (!userDoc.exists) {
             console.error('User not found:', userId);
             return h.response({ message: 'User not found' }).code(404);
         }
 
-        // Update informasi profil pengguna
         await admin.auth().updateUser(userId, { displayName: displayName, email: email });
-        await admin.firestore().collection('users').doc(userId).update({ displayName: displayName, email: email });
+        await admin.firestore().collection('users').doc(userId).update({
+            displayName: displayName,
+            email: email,
+            alamat: alamat,
+            kota: kota,
+            noHp: hp
+        });
 
         console.log('User profile updated successfully');
         return h.response({ message: 'User profile updated successfully' }).code(200);
@@ -171,10 +179,20 @@ const updateProfileHandler = async (request, h) => {
 
 
 
+
+
+
+
+
+
+
+
+
 //LAPANGAN
 //addlapangan handler
+//Untuk menambahkan  lapangan baru ke database 
 const addFieldHandler = async (request, h) => {
-    const { lapanganName, lapanganType, location, subFields } = request.payload;
+    const { lapanganName, lapanganType, alamat, kota, subFields } = request.payload;
     const openingHours = JSON.parse(request.payload.openingHours); // Parse openingHours dari JSON string
     const file = request.payload.file;
 
@@ -198,7 +216,8 @@ const addFieldHandler = async (request, h) => {
         await docRef.set({
             lapanganName: lapanganName,
             lapanganType: lapanganType,
-            location: location,
+            alamat: alamat,
+            kota: kota,
             openingHours: {
                 open: openingHours.open,
                 close: openingHours.close
@@ -218,6 +237,7 @@ const addFieldHandler = async (request, h) => {
 
 //Malihat daftar lapangan
 //getfield handler
+//Untuk mendapatkan data lapangan yang ada di database.
 const getFieldHandler =  async (request, h) => {
     try {
         const lapangansSnapshot = await admin.firestore().collection('lapangans').get();
@@ -237,6 +257,7 @@ const getFieldHandler =  async (request, h) => {
 
 //Melihat lapangan by id
 //getfieldbyid handler
+//Untuk mendapatkan data lapangan by ID
 const getFieldByidHandler = async (request, h) => {
   const { id } = request.params;
 
@@ -255,10 +276,11 @@ const getFieldByidHandler = async (request, h) => {
 }
 
 
-//Update fieldHnadler
+//Update fieldHandler
+//Untuk melakukan update data pada database
 const updateFieldHandler = async (request, h) => {
     const lapanganId = request.params.id;
-    const { lapanganName, lapanganType, location, subFields, openingHours } = request.payload;
+    const { lapanganName, lapanganType, alamat, kota , subFields, openingHours } = request.payload;
     const file = request.payload.file;
 
     try {
@@ -273,7 +295,8 @@ const updateFieldHandler = async (request, h) => {
         const updatedData = {
             lapanganName: lapanganName,
             lapanganType: lapanganType,
-            location: location,
+            alamat : alamat,
+            kota : kota,
             openingHours: JSON.parse(openingHours),
             subFields: JSON.parse(subFields)
         };
@@ -306,7 +329,48 @@ const updateFieldHandler = async (request, h) => {
     }
 }
 
+
+
+// End Point get Field by Kota and Type Lapangan
+//Endpoint untuk mencari lapangan berdasarkan kota pengguna dan jenis lapangan 
+const getFieldByKotaAndType = async (request, h) => {
+    const { lapanganType } = request.query;
+    const userId = request.user.uid;
+
+    try {
+        // Mendapatkan data pengguna dari Firestore
+        const userDoc = await admin.firestore().collection('users').doc(userId).get();
+        if (!userDoc.exists) {
+            return h.response({ message: 'User not found' }).code(404);
+        }
+
+        const userKota = userDoc.data().kota;
+
+        // Mendapatkan lapangan berdasarkan kota dan jenis lapangan
+        const lapanganSnapshot = await admin.firestore().collection('lapangans')
+            .where('kota', '==', userKota)
+            .where('lapanganType', '==', lapanganType)
+            .get();
+
+        const lapanganResults = [];
+        lapanganSnapshot.forEach(doc => {
+            lapanganResults.push({ id: doc.id, ...doc.data() });
+        });
+
+        return h.response(lapanganResults).code(200);
+    } catch (error) {
+        console.error('Error searching lapangans:', error);
+        return h.response({ message: 'Error searching lapangans', error: error.message }).code(500);
+    }
+}
+
+
+
+
+
+
 //Search Lapangan Handler
+//Melakukan search Lapangan pada data.
 const searchFieldHandler = async (request, h) => {
     const { keyword } = request.query;
 
@@ -330,8 +394,16 @@ const searchFieldHandler = async (request, h) => {
 
 
 
+
+
+
+
+
+
+
 //RESERVATION
 //reservation handler
+//Untuk menambahkan reservation baru ke database.
 const reservationHandler = async (request, h) => {
     const { lapanganId, subFieldName, date, startTime, endTime } = request.payload;
     const userId = request.user.uid;
@@ -421,6 +493,7 @@ const reservationHandler = async (request, h) => {
 
 
 //See User reservation
+
 const getUserReservationHandler = async (request, h) => {
     const userId = request.user.uid;
 
@@ -654,6 +727,10 @@ const searchEventHandler = async (request, h) => {
 
 
 
+
+
+
+
 //COMMUNITY
 //add Community handler
 //Untuk menambahkan community ke database.
@@ -775,8 +852,6 @@ const updateCommunityHandler = async (request, h) => {
     }
 }
 
-
-
 // Search Community Handler
 const searchCommunityHandler = async (request, h) => {
     const { keyword } = request.query;
@@ -819,6 +894,7 @@ module.exports = {
   getFieldByidHandler,
   searchFieldHandler,
   updateFieldHandler,
+  getFieldByKotaAndType,
 
 //RESERVATION
   reservationHandler,

@@ -83,6 +83,15 @@ const routes = [
     path: `/searchLapangan`,
     handler: handler.searchFieldHandler,
   },
+  {
+    method: 'GET',
+    path: '/searchLapanganByKotaAndType',
+    options: {
+        pre: [{ method: checkAuth }], // Memeriksa autentikasi pengguna
+        handler: handler.getFieldByKotaAndType,
+  },
+},
+
 
 
 
@@ -117,6 +126,7 @@ const routes = [
       handler : handler.historyReservationHandler,
     }
   },
+
 
 
 
@@ -164,6 +174,9 @@ const routes = [
   path: `/searchEvent`,
   handler: handler.searchEventHandler,
 },
+
+
+
 
 
 //Community
