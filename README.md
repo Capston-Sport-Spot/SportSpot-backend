@@ -157,7 +157,7 @@
   * Good Result  
     ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/e003c4a1-bccb-4a11-9d01-16710677c041)
 
-  * Result (ketika nama lapangan sudah ada)
+  * Result (ketika nama lapangan sudah ada)  
     ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/bd4fcf18-8f01-4d58-b1d6-353f079de308)  
 
   * Bad Result (Wroing API KEY)  
@@ -177,7 +177,7 @@
   * NOTING
 
 * **Result**
-  * Good Result
+  * Good Result  
     ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/f21ef08c-da60-4df8-b408-acdc2c270e1b)
 
 
@@ -291,7 +291,7 @@
   * **Function**  : Filterisasi dimana kita bisa mendapatkan daftar lapangan berdasarkan kota yang sama dengan kita berdasarkan jenis lapangannya [Basket, Futsal, Bulu Tangkis] (Membutuhkan **Bearer Token** dan **Params**
 
 * **Body**
-  * Bearer Token
+  * Bearer Token  
     ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/7e78f5cb-d8e0-4932-9aad-247c091a9c1b)
 
   * Params
@@ -315,7 +315,7 @@
   * **Function**  : Untuk User bisa melakukan reservation . Membutuhkan **Bearer Token**.
   
 * **Body**
-  * Bearer Token
+  * Bearer Token  
     ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/7e78f5cb-d8e0-4932-9aad-247c091a9c1b)
 
   * Payload (JSON)
@@ -331,11 +331,11 @@
   * Good Result  
 ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/96c9b64b-37e3-4d87-b16d-d1ba3df0cea2)  
 
-  * Bad Result (Tidak dapat memesan lapangan dimasa lalu)
-    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/ffed4720-d645-4442-a41c-5938a0849e08)
+  * Bad Result (Tidak dapat memesan lapangan dimasa lalu)  
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/ffed4720-d645-4442-a41c-5938a0849e08)  
 
-  * Bad Result (Tidak dapat memsan lapangan diluar jam operasional)
-    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/47090c1b-d262-4f4a-8243-1e80733e0ec2)
+  * Bad Result (Tidak dapat memsan lapangan diluar jam operasional)  
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/47090c1b-d262-4f4a-8243-1e80733e0ec2)  
 
 
 ### GetUserReservation
@@ -347,7 +347,7 @@
   * **Function**  : Untuk user dapat melihat reservasi yang telah ia lakukan . Membutuhkan **Bearer Token**.
   
 * **Body**
-  * Bearer Token
+  * Bearer Token  
     ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/7e78f5cb-d8e0-4932-9aad-247c091a9c1b)
 
 
@@ -369,12 +369,12 @@
   * **Function**  : Untuk dapat melihat reservasi apa saja yang sudah terjadi di satu field dalam lapangan.
 
 * **Result**
-  * Good Result
+  * Good Result  
     ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/2c538161-0b83-4bb3-9ab4-3ed55b3091a1)  
 
 
-  * Bad Result (Tidak dapat memesan lapangan dimasa lalu)
-    Nothing (tidak ada reservasi/kosong)
+  * Bad Result (Tidak dapat memesan lapangan dimasa lalu)  
+    Nothing (tidak ada reservasi/kosong)  
 
 
 
@@ -387,14 +387,14 @@
   * **Function**  : Untuk melihat history reservation user yang telah berlalu.. Membutuhkan **Bearer Token**.
   
 * **Body**
-  * Bearer Token
+  * Bearer Token  
     ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/7e78f5cb-d8e0-4932-9aad-247c091a9c1b)
 
 
 * **Result**
   * Good Result  
 
-  * Bad Result (Tidak dapat memesan lapangan dimasa lalu)
+  * Bad Result (Tidak dapat memesan lapangan dimasa lalu)  
 
 
 ### AddEvent
@@ -439,7 +439,7 @@
   * NOTING
 
 * **Result**
-  * Good Result
+  * Good Result  
     ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/d6244ef5-5b18-47ca-be80-29ff39d81ab5)  
 
 
@@ -456,8 +456,8 @@
   * NOTING
 
 * **Result**
-  * Good Result
-    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/3bc81fdc-7f01-4728-ae3d-98776c38abc6)
+  * Good Result  
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/3bc81fdc-7f01-4728-ae3d-98776c38abc6)  
 
 ### UpdateEvent
 ---
