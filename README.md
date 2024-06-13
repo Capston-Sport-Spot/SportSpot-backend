@@ -286,7 +286,7 @@
 ---
 * **Route**
   * Method  : "GET"
-  * Path    : //searchLapanganByKotaAndType
+  * Path    : /searchLapanganByKotaAndType
   * **http://localhost:9000/searchLapanganByKotaAndType**
   * **Function**  : Filterisasi dimana kita bisa mendapatkan daftar lapangan berdasarkan kota yang sama dengan kita berdasarkan jenis lapangannya [Basket, Futsal, Bulu Tangkis] (Membutuhkan **Bearer Token** dan **Params**
 
@@ -306,7 +306,98 @@
 
 
 
-  * Bad Result (Tidak ada data yang relevan)  
-  Nothing (kosoing)  
+### Reservation
+---
+* **Route**
+  * Method  : "POST"
+  * Path    : /reservations
+  * **http://localhost:9000/reservations**
+  * **Function**  : Untuk User bisa melakukan reservation . Membutuhkan **Bearer Token**.
+  
+* **Body**
+  * Bearer Token
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/7e78f5cb-d8e0-4932-9aad-247c091a9c1b)
+
+  * Payload (JSON)
+    {  
+    "lapanganId": "UR3h9stirAYqzJ5hrN2F",  
+    "subFieldName": "Lapangan 3",  
+    "date": "2024-06-13",  
+    "startTime": "13:00",  
+    "endTime": "16:00"  
+}  
+
+* **Result**
+  * Good Result  
+![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/96c9b64b-37e3-4d87-b16d-d1ba3df0cea2)  
+
+  * Bad Result (Tidak dapat memesan lapangan dimasa lalu)
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/ffed4720-d645-4442-a41c-5938a0849e08)
+
+  * Bad Result (Tidak dapat memsan lapangan diluar jam operasional)
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/47090c1b-d262-4f4a-8243-1e80733e0ec2)
+
+
+### GetUserReservation
+---
+* **Route**
+  * Method  : "GET"
+  * Path    : /reservations
+  * **http://localhost:9000/reservations**
+  * **Function**  : Untuk user dapat melihat reservasi yang telah ia lakukan . Membutuhkan **Bearer Token**.
+  
+* **Body**
+  * Bearer Token
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/7e78f5cb-d8e0-4932-9aad-247c091a9c1b)
+
+
+* **Result**
+  * Good Result  
+![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/4b4a3456-19c6-4a63-8e24-690879f4a0ee)  
+
+  * Bad Result (Tidak dapat memesan lapangan dimasa lalu)
+    Nothing (tidak ada reservasi/kosong)
+
+
+
+### GetsubLapanganReservation
+---
+* **Route**
+  * Method  : "GET"
+  * Path    : /reservations/{id Lapangan}/nama_SubLapangan
+  * **http://localhost:9000/reservations/{id Lapangan}/nama_SubLapangan**
+  * **Function**  : Untuk dapat melihat reservasi apa saja yang sudah terjadi di satu field dalam lapangan.
+
+* **Result**
+  * Good Result
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/2c538161-0b83-4bb3-9ab4-3ed55b3091a1)  
+
+
+  * Bad Result (Tidak dapat memesan lapangan dimasa lalu)
+    Nothing (tidak ada reservasi/kosong)
+
+
+
+### GetHistoryReservationUSer
+---
+* **Route**
+  * Method  : "GET"
+  * Path    : /reservations/history
+  * **http://localhost:9000/reservations/history**
+  * **Function**  : Untuk melihat history reservation user yang telah berlalu.. Membutuhkan **Bearer Token**.
+  
+* **Body**
+  * Bearer Token
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/7e78f5cb-d8e0-4932-9aad-247c091a9c1b)
+
+
+* **Result**
+  * Good Result  
+
+  * Bad Result (Tidak dapat memesan lapangan dimasa lalu)
+
+
+    
+ 
 
 
