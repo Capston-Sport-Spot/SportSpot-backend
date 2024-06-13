@@ -449,7 +449,7 @@
 * **Route**
   * Method  : "GET"
   * Path    : /events/{id}
-  * **http://localhost:9000/{id}**
+  * **http://localhost:9000/events/{id}**
   * **Function**  : Untuk menapilkan seluruh daftar Event yang ada by ID (Spesifik).
 
 * **Body**
@@ -457,7 +457,8 @@
 
 * **Result**
   * Good Result  
-    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/3bc81fdc-7f01-4728-ae3d-98776c38abc6)  
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/3bc81fdc-7f01-4728-ae3d-98776c38abc6) 
+   
 
 ### UpdateEvent
 ---
@@ -489,7 +490,7 @@
   Terjadi ketika field salah nama atau tidak lengkap atau kesalahan API key  
 
 
- ### DAFTAR Event By ID
+ ### Search Event 
 ---
 * **Route**
   * Method  : "GET"
@@ -498,7 +499,8 @@
   * **Function**  : Untuk medapatkan Event dari nama event yang diletakkan pada **Parameter**.
 
 * **Body**
-  * Parameter  
+  * Parameter
+    http://localhost:9000/searchEvent?keyword=Lomba Sepak Terjang 3
     ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/bf8082af-e471-4d7c-8486-3c713cb11d8c)  
 
 
@@ -507,6 +509,110 @@
    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/413dd8db-171e-42b8-9faa-75c0d323d263)  
 
 
+### AddCommunity
+---
+* **Route**
+  * Method  : "POST"
+  * Path    : /addCommunity
+  * **http://localhost:9000/addCommunity**
+  * **Function**  : Untuk menmbahkan Community ke database. **Hanya untuk backend bukan user** membutuhkan **API KEY**
+
+* **Body**
+  * Membutuhkan **API KEY**  
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/a29df09b-42ae-4047-b43a-05b67ab151af)
+
+  * Payload (form-data)
+    * **name**             : Komunitas Sepak Bola
+    * **description**      : Komunitas untuk pecinta sepak bola di area sekitar  
+    * **location**         : Jakarta 
+    * **contact**          : 08123456789
+    * **sportType**        : Sepak Bola
+    * **File**             : img.png (gambar)
+    
+* **Result**
+  * Good Result  
+![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/06409b3f-9e2e-4374-8683-6eab73ee8c9a)  
+
+  * Bad Result 
+  Terjadi ketika field salah nama atau tidak lengkap atau kesalahan API key  
+
+
+ ### DAFTAR Community
+---
+* **Route**
+  * Method  : "GET"
+  * Path    : /Community
+  * **http://localhost:9000/Community**
+  * **Function**  : Menapilkan seluruh daftar community yang ada.
+
+* **Body**
+  * NOTING
+
+* **Result**
+  * Good Result  
+![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/99b0a1b6-95c4-4461-b428-dcd24e67cdbc)  
 
 
 
+ ### DAFTAR Community By ID
+---
+* **Route**
+  * Method  : "GET"
+  * Path    : /Community/{id}
+  * **http://localhost:9000/Community/{id}**
+  * **Function**  : Untuk menapilkan seluruh daftar Community yang ada by ID (Spesifik).
+
+* **Body**
+  * NOTING
+
+* **Result**
+  * Good Result  
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/ede8dd0b-c143-4d11-8093-2ebcc2056e33)
+
+
+    
+### UpdateCommunity
+---
+* **Route**
+  * Method  : "PUT"
+  * Path    : /Community/{id}
+  * **http://localhost:9000/Community/{id}**
+  * **Function**  : Untuk Mengupdate Community di database. **Hanya untuk backend bukan user** membutuhkan **API KEY**
+
+* **Body**
+  * Membutuhkan **API KEY**  
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/a29df09b-42ae-4047-b43a-05b67ab151af)
+
+  * Payload (form-data)
+    * **name**             : Komunitas Sepak Bola
+    * **description**      : Komunitas untuk pecinta sepak bola di area sekitar  
+    * **location**         : Jakarta 
+    * **contact**          : 08123456789
+    * **sportType**        : Sepak Bola
+    * **File**             : img.png (gambar)
+    
+* **Result**
+  * Good Result  
+![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/1fb0c601-d7d9-4cb9-9c35-6bf446107e0b)  
+
+  * Bad Result 
+  Terjadi ketika field salah nama atau tidak lengkap atau kesalahan API key  
+   
+
+ ### Search Event 
+---
+* **Route**
+  * Method  : "GET"
+  * Path    : /searchCommunity
+  * **http://localhost:9000/searchCommunity**
+  * **Function**  : Untuk medapatkan Community dari nama Community yang diletakkan pada **Parameter**.
+
+* **Body**
+  * Parameter
+  http://localhost:9000/searchCommunity?keyword=Komunitas Sepak Terjang  
+![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/837bc1c5-e5d8-4523-b9c1-5bf5cf5560d9)  
+
+
+* **Result**
+  * Good Result  
+![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/b6a283dd-cb67-4f3e-95ca-e571beeb00ac)  
