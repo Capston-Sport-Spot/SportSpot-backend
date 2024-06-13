@@ -1,4 +1,6 @@
 ## Menjalankan Secara Local
+### Notes 
+* Dalam masa pengembangan untuk **addLapangan**, **updateLapangan**, **addEvent**, **updateEvent**, **addCommunity**, **updateComunity**. Dilakukan oleh backend Developer **(Tidak perlu dipakai Mobile Developer)**
 ### URL 
 * http://localhost:9000
 * Untuk pengetesan Gunakan **POSTMAN**  
@@ -60,7 +62,7 @@
   * Method  : "GET"
   * Path    : /profile
   * **http://localhost:9000/profile**
-  * **Function**  : Untuk mendapatkan data user seperti email dan nama memakai **Beare Token**
+  * **Function**  : Untuk mendapatkan data user seperti email dan nama memakai **Bearer Token**
 
 * **Body**
   * Membutuhkan **bearer token**
@@ -70,8 +72,40 @@
   * Good Result  
    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/f86d4ee4-5214-410b-8483-0cecdcee4263)
 
-  * Bad Result (Kesalahan memasukkan Bearer Token)  
+* **Bad Result** (Kesalahan memasukkan Bearer Token)  
     ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/cf3ff981-1080-4d65-85b7-77444c3ea468)
+
+
+### UpdateProfile
+---
+* **Route**
+  * Method  : "PUT"
+  * Path    : /profile
+  * **http://localhost:9000/profile**
+  * **Function**  : Untuk bisa melakukan update informasi user menggunakan **Bearer Token**
+
+* **Body**
+  * Membutuhkan **bearer token**
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/5937800a-1ae4-4fb8-a4d3-e27ff147c284)
+
+  * {  
+    "email": "user@10example.com",  
+    "displayName": "Johnson",  
+    "alamat": "Jalan Irian No 2",  
+    "kota": "Makassar",  
+    "hp": "08123456789"  
+    }
+    
+* **Result**
+  * Good Result  
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/819f6c2e-6413-4ff9-84c0-f0eb9cc14766)
+
+  * Bad Result (Kesalahan memasukkan Bearer Token)  
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/cf3ff981-1080-4d65-85b7-77444c3ea468)  
+
+
+
+    
 
 
 ### ADDLAPANGAN
@@ -86,32 +120,45 @@
   * Membutuhkan **API KEY**  
     ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/a29df09b-42ae-4047-b43a-05b67ab151af)
 
-  * Payload  
+  * Payload (form-data)
+    * **lapanganName** : Lapangan langit 21
+    * **LapanganType** : Futsal
+    * **kota**         : Makassar
+    * **alamat**       : Jalan Irian No 2
+    * **openingHours** : {  
+            "close": "20:00",  
+            "open": "09:00"  
+        }
+    * **subField**     : [  
     {  
-    >"lapanganName": "Lapangan permata",  
-    >"lapanganType": "Futsal",  
-    >"location": "Jl. Sudirman No.1, Jakarta",  
-    >"openingHours": {  
-        "start": "09:00",  
-        "end": "20:00"  
-    },  
-    "subFields": [  
-    {  
-            "name": "Lapangan 1",  
-            "pricePerSession": 100000,  
-            "facilities": ["Shower", "Parking", "Cafeteria"]  
-        },  
-        {  
-            "name": "Lapangan 2",  
-            "pricePerSession": 100000,  
-            "facilities": ["Shower", "Parking", "Cafeteria"]  
-        },  
-        ]  
-        }  
-
+        "fieldName": "Lapangan 1",  
+        "pricePerSession": 100000,  
+        "facilities": ["Shower", "Parking", "Cafeteria"]  
+    },
+    {
+        "fieldName": "Lapangan 2",  
+        "pricePerSession": 100000,  
+        "facilities": ["Shower", "Parking", "Cafeteria"]  
+    },
+    {
+        "fieldName": "Lapangan 3",  
+        "pricePerSession": 100000,  
+        "facilities": ["Shower", "Parking", "Cafeteria"]  
+    },
+    {
+        "fieldName": "Lapangan 4",  
+        "pricePerSession": 100000,  
+        "facilities": ["Shower", "Parking", "Cafeteria"]  
+    }  
+    ]  
+    * **File**  : img.png (gambar)
+    
 * **Result**
   * Good Result  
-    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/0ff2696a-00f9-48f6-9ca8-5675a0ce7e92)
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/e003c4a1-bccb-4a11-9d01-16710677c041)
+
+  * Result (ketika nama lapangan sudah ada)
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/bd4fcf18-8f01-4d58-b1d6-353f079de308)  
 
   * Bad Result (Wroing API KEY)  
     ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/f138c530-49e9-42a4-a0ed-743db93548ea)
@@ -124,14 +171,14 @@
   * Method  : "GET"
   * Path    : /lapangans
   * **http://localhost:9000/lapangans**
-  * **Function**  : Untuk menapil seluruh daftar lapangan yang ada.
+  * **Function**  : Untuk menapilkan seluruh daftar lapangan yang ada.
 
 * **Body**
   * NOTING
 
 * **Result**
-  * Good Result  
-    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/c8c57616-5782-435e-b53e-bc839af6e160)
+  * Good Result
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/f21ef08c-da60-4df8-b408-acdc2c270e1b)
 
 
 
@@ -148,7 +195,118 @@
 
 * **Result**
   * Good Result  
-    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/5956f247-7d87-41ac-bc44-0527ab27cdfa)
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/5956f247-7d87-41ac-bc44-0527ab27cdfa)  
 
   * Bad Result (WRONG ID)  
    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/480e6dc5-0b2a-4cd9-85e6-44c463ab69ba)
+
+
+
+### UpdateLapangan
+---
+* **Route**
+  * Method  : "PUT"
+  * Path    : /lapangan/{id}
+  * **http://localhost:9000/lapangan/{id}**
+  * **Function**  : Untuk mengupdate lapangan berdasarkan ID - NYA **Hanya untuk backend bukan user** membutuhkan **API KEY**
+
+* **Body**
+  * Membutuhkan **API KEY**  
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/a29df09b-42ae-4047-b43a-05b67ab151af)
+
+  * Payload (form-data)
+    * **lapanganName** : Lapangan langit 21
+    * **LapanganType** : Futsal
+    * **kota**         : Makassar
+    * **alamat**       : Jalan Irian No 2
+    * **openingHours** : {  
+            "close": "20:00",  
+            "open": "09:00"  
+        }
+    * **subField**     : [  
+    {  
+        "fieldName": "Lapangan 1",  
+        "pricePerSession": 100000,  
+        "facilities": ["Shower", "Parking", "Cafeteria"]  
+    },
+    {
+        "fieldName": "Lapangan 2",  
+        "pricePerSession": 100000,  
+        "facilities": ["Shower", "Parking", "Cafeteria"]  
+    },
+    {
+        "fieldName": "Lapangan 3",  
+        "pricePerSession": 100000,  
+        "facilities": ["Shower", "Parking", "Cafeteria"]  
+    },
+    {
+        "fieldName": "Lapangan 4",  
+        "pricePerSession": 100000,  
+        "facilities": ["Shower", "Parking", "Cafeteria"]  
+    }  
+    ]  
+    * **File**  : img.png (gambar)
+    
+* **Result**
+  * Good Result  
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/ae2c299f-0472-429a-93ae-d8917aa0b441)
+
+  * Bad Result (Wroing API KEY)  
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/f138c530-49e9-42a4-a0ed-743db93548ea)
+
+  * Bad Result (Lapangan Not Found wrong lapangan ID)  
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/3c4179fd-1fb0-4ea6-af11-53ef0ca29a5b)
+
+
+
+### SearchLapangan
+---
+* **Route**
+  * Method  : "GET"
+  * Path    : /searchLapangan
+  * **http://localhost:9000/searchLapangan**
+  * **Function**  : Untuk melakukan serching lapagan menggunakan parameter nama lapangan
+
+* **Body**
+  * Membutuhkan **Params**
+    http://localhost:9000/searchLapangan?keyword=Lapangan Pencak 21    
+![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/1c8eed6b-8b49-49fe-a131-f9f275ac9fc9)  
+
+* **Result**
+  * Good Result  
+![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/d72961c4-3c2e-4e1d-987a-13d10a56f1f4)
+
+
+* **Bad Result** (Kesalahan tidak memasukkan paramter)  
+  ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/620e52df-9e99-4468-b90d-d60165922c85)
+
+
+
+### GETLapanganByKota&Type
+---
+* **Route**
+  * Method  : "GET"
+  * Path    : //searchLapanganByKotaAndType
+  * **http://localhost:9000/searchLapanganByKotaAndType**
+  * **Function**  : Filterisasi dimana kita bisa mendapatkan daftar lapangan berdasarkan kota yang sama dengan kita berdasarkan jenis lapangannya [Basket, Futsal, Bulu Tangkis] (Membutuhkan **Bearer Token** dan **Params**
+
+* **Body**
+  * Bearer Token
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/7e78f5cb-d8e0-4932-9aad-247c091a9c1b)
+
+  * Params
+    http://localhost:9000/searchLapanganByKotaAndType?lapanganType=Basket
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/f755142d-9828-4c42-a27c-8a304e8c50d2)
+
+
+    
+* **Result**
+  * Good Result  
+![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/51aed82c-9116-4728-9bc1-bf6c6cbc92a9)
+
+
+
+  * Bad Result (Tidak ada data yang relevan)  
+  Nothing (kosoing)  
+
+
