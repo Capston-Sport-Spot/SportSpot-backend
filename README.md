@@ -599,7 +599,7 @@
   Terjadi ketika field salah nama atau tidak lengkap atau kesalahan API key  
    
 
- ### Search Event 
+ ### Search Community 
 ---
 * **Route**
   * Method  : "GET"
