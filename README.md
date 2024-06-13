@@ -397,7 +397,116 @@
   * Bad Result (Tidak dapat memesan lapangan dimasa lalu)
 
 
+### AddEvent
+---
+* **Route**
+  * Method  : "POST"
+  * Path    : /addEvent
+  * **http://localhost:9000/addEvent**
+  * **Function**  : Untuk menmbahkan daftar Event yang akan diselenggarakan. **Hanya untuk backend bukan user** membutuhkan **API KEY**
+
+* **Body**
+  * Membutuhkan **API KEY**  
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/a29df09b-42ae-4047-b43a-05b67ab151af)
+
+  * Payload (form-data)
+    * **title**           : Loba sepak terjang  
+    * **organizier**      : Sports Club  
+    * **contactInfo**     : portsclub@example.com  
+    * **eventType**       : Football Tournament
+    * **description**     : Join us for an exciting football tournament. Open to all skill levels!
+    * **location**        : City Stadium
+    * **date**            : 2024-07-15
+    * **File**            : img.png (gambar)
     
- 
+* **Result**
+  * Good Result  
+![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/3452aea1-8a21-4ff2-ad4e-6ef77e8881cb)  
+
+  * Bad Result 
+  Terjadi ketika field salah nama atau tidak lengkap atau kesalahan API key  
+
+    
+ ### DAFTAR Event
+---
+* **Route**
+  * Method  : "GET"
+  * Path    : /events
+  * **http://localhost:9000/events**
+  * **Function**  : Untuk menapilkan seluruh daftar Event yang ada.
+
+* **Body**
+  * NOTING
+
+* **Result**
+  * Good Result
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/d6244ef5-5b18-47ca-be80-29ff39d81ab5)  
+
+
+
+ ### DAFTAR Event By ID
+---
+* **Route**
+  * Method  : "GET"
+  * Path    : /events/{id}
+  * **http://localhost:9000/{id}**
+  * **Function**  : Untuk menapilkan seluruh daftar Event yang ada by ID (Spesifik).
+
+* **Body**
+  * NOTING
+
+* **Result**
+  * Good Result
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/3bc81fdc-7f01-4728-ae3d-98776c38abc6)
+
+### UpdateEvent
+---
+* **Route**
+  * Method  : "POST"
+  * Path    : /events/{id}
+  * **http://localhost:9000/{id}**
+  * **Function**  : Untuk mengupdate event secara spesific by ID. **Hanya untuk backend bukan user** membutuhkan **API KEY**
+
+* **Body**
+  * Membutuhkan **API KEY**  
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/a29df09b-42ae-4047-b43a-05b67ab151af)
+
+  * Payload (form-data)
+    * **title**           : Loba sepak terjang  
+    * **organizier**      : Sports Club  
+    * **contactInfo**     : portsclub@example.com  
+    * **eventType**       : Football Tournament
+    * **description**     : Join us for an exciting football tournament. Open to all skill levels!
+    * **location**        : City Stadium
+    * **date**            : 2024-07-15
+    * **File**            : img.png (gambar)
+    
+* **Result**
+  * Good Result  
+![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/2248dc4a-d8cc-4254-aa19-68c19021fbe9)  
+
+  * Bad Result 
+  Terjadi ketika field salah nama atau tidak lengkap atau kesalahan API key  
+
+
+ ### DAFTAR Event By ID
+---
+* **Route**
+  * Method  : "GET"
+  * Path    : /searchEvent
+  * **http://localhost:9000/searchEvent**
+  * **Function**  : Untuk medapatkan Event dari nama event yang diletakkan pada **Parameter**.
+
+* **Body**
+  * Parameter  
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/bf8082af-e471-4d7c-8486-3c713cb11d8c)  
+
+
+* **Result**
+  * Good Result  
+   ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/413dd8db-171e-42b8-9faa-75c0d323d263)  
+
+
+
 
 
