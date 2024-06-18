@@ -222,7 +222,55 @@ const routes = [
   method: 'GET',
   path: '/searchCommunity',
   handler: handler.searchCommunityHandler,
-}
+},
+
+
+
+//Article
+{
+  method: 'POST',
+  path: '/importArticlesFromCSV',
+  options: {
+    pre: [{ method: checkApiKey }],
+    payload: {
+        maxBytes: 10485760, // 10MB
+        output: 'stream',
+        parse: true,
+        multipart: true
+    },
+      handler : handler.importArticle,
+  }
+},
+{
+  method: 'GET',
+  path: '/articles',
+  handler: handler.getArticle,
+},
+{
+  method: 'GET',
+  path: '/articles/{articleId}',
+  options: {
+    pre: [{ method: checkAuth }]
+  },
+  handler: handler.getArticlebyId,
+},
+{
+  method: 'GET',
+  path: '/user/history',
+  options: {
+    pre: [{ method: checkAuth }]
+  },
+  handler: handler.getHistoryArticleUser,
+},
+{
+  method: 'GET',
+  path: '/recommend',
+  options: {
+    pre: [{ method: checkAuth }]
+  },
+  handler: handler.getRecomendationArticle,
+},
+
 ];
 
 module.exports = routes;

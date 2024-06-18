@@ -4,6 +4,10 @@ const serviceAccount = require("../sportspot-d0d68-firebase-adminsdk-i7wnv-d8563
 const Inert = require('@hapi/inert');
 const fs = require('fs');
 const path = require('path');
+const csv = require('csv-parser');
+const { Readable } = require('stream');
+
+
 
 const firebaseConfig = {
   apiKey: "AIzaSyAums4aGVXVkIudolgOaxfclOeVipSLePQ",
@@ -876,6 +880,180 @@ const searchCommunityHandler = async (request, h) => {
 
 
 
+
+//Untuk artikel
+//Import Artikel
+const importArticle = async (request, h) => {
+    const file = request.payload.file;
+
+    if (!file || !file.hapi.filename.endsWith('.csv')) {
+        return h.response({ message: 'Invalid CSV file' }).code(400);
+    }
+
+    const articles = [];
+
+    try {
+        // Membaca file CSV dengan csv-parser
+        const readableStream = new Readable();
+        readableStream.push(file._data);
+        readableStream.push(null);
+
+        await new Promise((resolve, reject) => {
+            readableStream.pipe(csv())
+                .on('data', (data) => {
+                    // Memproses setiap baris dari CSV
+                    articles.push({
+                        link: data.link.trim(),
+                        title: data.title.trim(),
+                        imageLink: data.image_link.trim(),
+                        time: data.time.trim()
+                    });
+                })
+                .on('end', () => {
+                    resolve();
+                })
+                .on('error', (error) => {
+                    reject(error);
+                });
+        });
+
+        // Menyimpan data artikel ke Firestore
+        const batch = db.batch();
+        const articlesCollection = db.collection('articles');
+
+        articles.forEach(article => {
+            const docRef = articlesCollection.doc(); // Membuat dokumen baru dengan ID otomatis
+            batch.set(docRef, article);
+        });
+
+        await batch.commit();
+
+        return h.response({ message: 'Articles imported successfully' }).code(200);
+    } catch (error) {
+        console.error('Error importing articles:', error);
+        return h.response({ message: 'Error importing articles', error: error.message }).code(500);
+    }
+}
+
+
+
+//Get Artikel
+//Untuk mendapatkan semua daftar artikel yang ada 
+
+const getArticle =  async (request, h) => {
+    try {
+        const articlesSnapshot = await db.collection('articles').get();
+        const articles = [];
+
+        articlesSnapshot.forEach(doc => {
+            articles.push({
+                id: doc.id,
+                ...doc.data()
+            });
+        });
+
+        return h.response({ articles }).code(200);
+    } catch (error) {
+        console.error('Error fetching articles:', error);
+        return h.response({ message: 'Error fetching articles', error: error.message }).code(500);
+    }
+}
+
+
+
+
+//Get article by ID
+//Untuk mendapatkan artikel by ID dan mereka jejak user saat memilih artikel tersebut yang akan diberikan di colection userHistory
+const getArticlebyId = async (request, h) => {
+    const { articleId } = request.params;
+
+    try {
+        // Mengambil detail artikel dari Firestore
+        const articleDoc = await admin.firestore().collection('articles').doc(articleId).get();
+
+        if (!articleDoc.exists) {
+            return h.response({ message: 'Article not found' }).code(404);
+        }
+
+        const articleData = articleDoc.data();
+
+        // Merekam history pengguna jika pengguna terautentikasi
+        if (request.user) {
+            const userId = request.user.uid;
+            const historyRef = admin.firestore().collection('userHistory').doc();
+
+            // Menambahkan data history pengguna
+            await historyRef.set({
+                userId: userId,
+                articleId: articleId,
+                timestamp: new Date().toISOString()
+            });
+        }
+
+        return h.response(articleData).code(200);
+    } catch (error) {
+        console.error('Error fetching article:', error);
+        return h.response({ message: 'Error fetching article', error: error.message }).code(500);
+    }
+}
+
+//Get History user Article
+//Untuk mendapatkan history user berdasarkan artikel yang pernah mereka buka.
+const getHistoryArticleUser = async (request, h) => {
+    try {
+        // Mendapatkan userId dari token autentikasi
+        const userId = request.user.uid;
+
+        // Mengambil history artikel dari Firestore berdasarkan userId
+        const historySnapshot = await admin.firestore().collection('userHistory')
+            .where('userId', '==', userId)
+            .orderBy('timestamp', 'desc') // Mengurutkan berdasarkan timestamp secara menurun
+            .get();
+
+        if (historySnapshot.empty) {
+            return h.response({ message: 'No history found for user' }).code(404);
+        }
+
+        // Mengambil data artikel berdasarkan history
+        const historyData = [];
+        for (const doc of historySnapshot.docs) {
+            const articleId = doc.data().articleId;
+            const articleDoc = await admin.firestore().collection('articles').doc(articleId).get();
+
+            if (articleDoc.exists) {
+                const articleData = articleDoc.data();
+                historyData.push({ articleId, ...articleData });
+            }
+        }
+
+        return h.response(historyData).code(200);
+    } catch (error) {
+        console.error('Error fetching user history:', error);
+        return h.response({ message: 'Error fetching user history', error: error.message }).code(500);
+    }
+}
+
+
+
+//Get Recomendation Aticle
+//Untuk mendapatkan recomendasi artikel dari model ML learning yang dideploy menggunakan API flask
+const getRecomendationArticle = async (request, h) => {
+    const userId = request.user.uid;
+    
+    try {
+        const response = await axios.post('http://127.0.0.1:5000/recommend_articles', {
+            userId: userId
+        });
+        return h.response(response.data).code(200);
+    } catch (error) {
+        console.error('Error in Flask API call:', error);
+        return h.response({ message: 'Internal Server Error' }).code(500);
+    }
+}
+
+
+
+
 // Protected route handler
 const protectedHandler = async (request, h) => {
   return h.response({ message: "You have access to this route" }).code(200);
@@ -915,6 +1093,13 @@ getCommunityHandler,
 getCommunityByIdHandler,
 updateCommunityHandler,
 searchCommunityHandler,
+
+//Article
+importArticle,
+getArticle,
+getArticlebyId,
+getHistoryArticleUser,
+getRecomendationArticle,
 
   protectedHandler,
 };

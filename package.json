@@ -13,6 +13,7 @@
     "@hapi/hapi": "^21.3.9",
     "@hapi/inert": "^7.1.0",
     "axios": "^1.7.2",
+    "csv-parser": "^3.0.0",
     "firebase-admin": "^12.1.1"
   },
   "devDependencies": {
