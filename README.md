@@ -1,4 +1,3 @@
-![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/f9a2f451-16f1-4cdf-acb0-016972ccf9fb)## Menjalankan Secara Local
 ### Notes 
 * Dalam masa pengembangan untuk **addLapangan**, **updateLapangan**, **addEvent**, **updateEvent**, **addCommunity**, **updateComunity**. Dilakukan oleh backend Developer **(Tidak perlu dipakai Mobile Developer)**
 ### URL 
