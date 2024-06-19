@@ -1041,7 +1041,7 @@ const getRecomendationArticle = async (request, h) => {
     const userId = request.user.uid;
     
     try {
-        const response = await axios.post('http://127.0.0.1:5000/recommend_articles', {
+        const response = await axios.post('http://34.101.60.31:5000/recommend_articles', {
             userId: userId
         });
         return h.response(response.data).code(200);
