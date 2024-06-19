@@ -1,4 +1,4 @@
-## Menjalankan Secara Local
+![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/f9a2f451-16f1-4cdf-acb0-016972ccf9fb)## Menjalankan Secara Local
 ### Notes 
 * Dalam masa pengembangan untuk **addLapangan**, **updateLapangan**, **addEvent**, **updateEvent**, **addCommunity**, **updateComunity**. Dilakukan oleh backend Developer **(Tidak perlu dipakai Mobile Developer)**
 ### URL 
@@ -616,3 +616,84 @@
 * **Result**
   * Good Result  
 ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/b6a283dd-cb67-4f3e-95ca-e571beeb00ac)  
+
+
+ ### Daftar Article 
+---
+* **Route**
+  * Method  : "GET"
+  * Path    : /articles
+  * **http://localhost:9000/articles**
+  * **Function**  : Untuk mendapatkan daftar article yang ada di database.
+
+* **Result**
+  * Good Result  
+![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/ad9969a9-731b-4546-beda-502c31b6cad9)  
+
+
+
+### Melihat artikel Dengan ID
+---
+* **Route**
+  * Method  : "GET"
+  * Path    : /articles/{id_article}
+  * **http://localhost:9000/articles/{id_article}**
+  * **Function**  : Untuk mendapatkan artikel secara spesifik membutuhkan **Bearer Token**
+  * **Adtional Function** : setiap kali user membuka artikel secara spesifik maka data user saat membuka artikel apa akan disimpan dalam colection **userHistory**
+
+* **Body**
+  * Membutuhkan **bearer token**
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/5937800a-1ae4-4fb8-a4d3-e27ff147c284)
+
+* **Result**
+  * Good Result  
+![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/237924b1-4326-41d7-913c-a2ba74888a81)  
+
+* **Bad Result** (Kesalahan memasukkan Bearer Token)  
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/cf3ff981-1080-4d65-85b7-77444c3ea468)
+
+
+### Melihat History Artickle yang dibuat user (UNTUK BACKEND)
+---
+* **Route**
+  * Method  : "GET"
+  * Path    : /user/history
+  * **http://localhost:9000/user/history}**
+  * **Function**  : Untuk melihat history artikel yang pernah dibuka user **Bearer Token**
+
+* **Body**
+  * Membutuhkan **bearer token**
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/5937800a-1ae4-4fb8-a4d3-e27ff147c284)
+
+* **Result**
+  * Good Result  
+![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/fa9e34f0-85bc-4349-88cb-3df21e038210)  
+
+
+* **Bad Result** (Kesalahan memasukkan Bearer Token)  
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/cf3ff981-1080-4d65-85b7-77444c3ea468)  
+
+
+### Melihat Recomendation yang diberikan model API FLASK
+---
+* **Route**
+  * Method  : "GET"
+  * Path    : /recommend
+  * **http://localhost:9000/user/history}**
+  * **Function**  : Untuk melihat rekomendasi artikel berdasarkan history artikel user **Bearer Token**
+
+* **Body**
+  * Membutuhkan **bearer token**
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/5937800a-1ae4-4fb8-a4d3-e27ff147c284)
+
+* **Result**
+  * Good Result  
+![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/ed8ce28b-61e8-490f-8edc-853e2b1dbb53)  
+
+* **Bad Result** (Kesalahan memasukkan Bearer Token)  
+    ![image](https://github.com/Capston-Sport-Spot/SportSpot-backend/assets/120615297/cf3ff981-1080-4d65-85b7-77444c3ea468)  
+
+
+
+
+
